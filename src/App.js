@@ -1,9 +1,10 @@
 import React from 'react';
 
-function App() {
+import Home from './screens/Home/Home.component';
+
+const App = () => {
   return (
-    <div className="App">
-    </div>
+    <Home />
   );
 }
 
