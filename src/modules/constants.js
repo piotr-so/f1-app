@@ -3,5 +3,6 @@ export const FontColors = {
 }
 
 export const BackgroundColors = {
-    header: '#EE0000'
+    header: '#EE0000',
+    timerBoxNumberBackground: '#9D979733'
 }
