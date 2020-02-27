@@ -1,20 +1,19 @@
 import React from 'react';
 import { CardWrapper, DriverInfo, DriverNumber, DriverDescription, Name, Team, Points, DriverImg} from './driver-card.styled';
-import HamiltonImg from '../../assets/drivers/hamilton-minified.png';
+import driverPlaceholderImg from '../../assets/imgs/driver_placeholder.png';
 
-
-const DriverCard = (props) => {
+const DriverCard = ({scaled, position, name, points, constructorTeam, img, teamBackgroundTheme, fixPosition}) => {
     return (
-        <CardWrapper {...props}>
+        <CardWrapper scaled={scaled} theme={teamBackgroundTheme}>
             <DriverInfo>
-                <DriverNumber>1</DriverNumber>
-                <DriverDescription>
-                    <Name>Lewis</Name>
-                    <Team>Mercedes</Team>
-                    <Points>322 PTS</Points>
+                <DriverNumber fixPosition={fixPosition}>{position}</DriverNumber>
+                <DriverDescription fixPosition={fixPosition}>
+                    <Name>{name}</Name>
+                    <Team>{constructorTeam}</Team>
+                    <Points>{points} PTS</Points>
                 </DriverDescription>
             </DriverInfo>
-            <DriverImg src={HamiltonImg} alt={`hamilton`}/>
+            <DriverImg src={img === undefined || img === 'emptyLoading' ? driverPlaceholderImg : img} alt={name}/>
         </CardWrapper>
     );
 }

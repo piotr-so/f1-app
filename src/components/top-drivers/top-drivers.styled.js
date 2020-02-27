@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 import { FontColors, BackgroundColors } from '../../modules/constants';
 import dottedNetImg from '../../assets/backgrounds/dotted-net.png';
 
@@ -12,6 +12,14 @@ export const BackgroundBox = styled.div`
     height: 360px;
     background-color: ${BackgroundColors.main};
     z-index: 2;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.7s;
+
+    ${props => props.reveal && css`
+        transform: translateY(0);
+        opacity: 1;
+    `}
 `;
 export const Title = styled.h1`
     font-size: 20px;
@@ -39,7 +47,7 @@ export const CardsSliderWrapper = styled.div`
     position: absolute;
     display: flex;
     flex-direction: row;
-    transition: transform 0s ease-in-out;
+    transition: transform 0.5s ease-in;
 
     &>div:first-child{
         margin-left: 24px;
