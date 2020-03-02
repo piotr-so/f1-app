@@ -37,5 +37,24 @@ export const fetchDriverImgsFromCollection = (driverNamesArray) => {
         .then(snapshot => {
             return convertCollectionSnapshotToUrlObj(snapshot, driverNamesArray)
         })
+        .catch(err => {
+            console.log(err);
+        })
+    return result
+}
+
+export const fetchTrackImgFromCollection = (nextRaceName) => {
+    const tracksCollectionRef = firestore.collection('raceTracksCollection');
+
+    const result = tracksCollectionRef
+        .get()
+        .then(snapshot => {
+            const racesDataArray = snapshot.docs[0].data().raceTracksData;
+            const nextRaceData = racesDataArray.filter(raceItem => raceItem.raceName === nextRaceName)
+            return nextRaceData[0].imageUrl;
+        })
+        .catch(err => {
+            console.log(err);
+        })
     return result
 }

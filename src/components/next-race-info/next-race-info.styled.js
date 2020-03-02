@@ -5,7 +5,6 @@ import checkeredFlagImg from '../../assets/backgrounds/checkered-flag.svg'
 export const SectionWrapper = styled.section`
     display: flex;
     justify-content: center;
-    min-height: 248px;
     padding: 24px;
 `;
 
@@ -55,4 +54,7 @@ export const TrackImg = styled.img`
     grid-column: 2;
     grid-row: 1 / 3;
     justify-self: end;
+    width: 128px;
+    height: 96px;
+    filter: invert(100%);
 `;
