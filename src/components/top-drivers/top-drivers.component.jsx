@@ -160,13 +160,6 @@ const TopDrivers = () => {
                 </CardsSlider>
             </BackgroundBox>
             <DottedBox />
-            <DottedBox />
-            <DottedBox />
-            <DottedBox />
-            <DottedBox />
-            <DottedBox />
-            <DottedBox />
-            <DottedBox />
         </TopDriversWrapper>
     );
 }

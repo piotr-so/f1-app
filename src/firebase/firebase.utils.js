@@ -58,3 +58,24 @@ export const fetchTrackImgFromCollection = (nextRaceName) => {
         })
     return result
 }
+
+export const addCarImgsUrls = (topContructorsData) => {
+    const carsCollectionRef = firestore.collection('carsCollection');
+
+    const result = carsCollectionRef
+        .get()
+        .then(snapshot => {
+            const carsDataObj = snapshot.docs[0].data();
+            const arrOfObjWithAddedUrls = topContructorsData.map(constructorTeam => {
+                return {
+                    ...constructorTeam,
+                    carImgUrl: carsDataObj[constructorTeam.constructorId].carImgUrl
+                }
+            });
+            return arrOfObjWithAddedUrls;
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    return result
+}
