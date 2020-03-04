@@ -1,11 +1,13 @@
 export const FontColors = {
     main: "#5A5A5A",
     secondary: "#FFFFFF",
-    driverCard: "#5A5A5A"
+    driverCard: "#5A5A5A",
+    navElemActive: "#EE0000"
 }
 
 export const BackgroundColors = {
     main: '#EE0000',
+    secondary: "#FFFFFF",
     header: '#EE0000',
     timerBoxNumberBackground: '#9D979733',
     driverCard: "#5A5A5A",
@@ -20,5 +22,6 @@ export const BackgroundColors = {
         red_bull: "#1E41FF",
         toro_rosso: "#4498F9",
         williams: "#FFFFFF"
-    }
+    },
+    navElemActiveBg: "#EE00001A"
 }

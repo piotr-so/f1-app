@@ -32,7 +32,7 @@ const TopConstructors = () => {
     }, []);
 
     return (
-        <TopConstructorsWrapper reveal={topContructors.length > 0} onClick={() => window.location.reload()}>
+        <TopConstructorsWrapper reveal={topContructors.length > 0}>
             <Title>Best constructors</Title>
             {topContructors.length > 0 && topContructors.map((constructorTeam, idx) => (
                 <ConstructorTile
