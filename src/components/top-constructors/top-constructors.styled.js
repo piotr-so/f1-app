@@ -3,7 +3,7 @@ import { FontColors } from '../../modules/constants';
 
 export const TopConstructorsWrapper = styled.section`
     min-height: 356px;
-    margin-top: 24px;
+    margin: 24px 0 60px 0;
     opacity: 0;
     transform: translateY(-10px);
     transition: all 0.7s;
