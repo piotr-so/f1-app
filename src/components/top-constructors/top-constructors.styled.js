@@ -6,7 +6,7 @@ export const TopConstructorsWrapper = styled.section`
     margin: 24px 0 60px 0;
     opacity: 0;
     transform: translateY(-10px);
-    transition: all 0.7s;
+    transition: all 0.7s ease-in;
     ${props => props.reveal && css`
         transform: translateY(0);
         opacity: 1;

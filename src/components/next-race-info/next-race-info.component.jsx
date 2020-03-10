@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+
+import { useStateValue } from '../../state/context';
+import { setNextRaceEvent } from '../../state/actions';
+
 import { fetchTrackImgFromCollection } from '../../firebase/firebase.utils';
 
 import CountdownTimer from '../countdown-timer/countdown-timer.component';
@@ -9,24 +13,32 @@ import { SectionWrapper, RaceInfoBox, CheckeredFlag, ElementsWrapper, TrackImg }
 
 const NextRace = () => {
 
-    const [nextRaceEvent, setNextRaceEvent] = useState(null);
+    const [{ nextRaceEvent }, dispatch] = useStateValue();
 
-    const getNextRaceData = async () => {
-        let res = await axios.get('https://ergast.com/api/f1/2020/next.json');
-        const { raceName, date, time } = res.data.MRData.RaceTable.Races[0];
-        const eventDate = moment(`${date} ${time}`);
-        let racetrackImgUrl = await fetchTrackImgFromCollection(raceName);
+    const getNextRaceData = useCallback(
+        async () => {
+            let res = await axios.get('https://ergast.com/api/f1/2020/next.json');
+            const { raceName, date, time } = res.data.MRData.RaceTable.Races[0];
+            const eventDate = moment(`${date} ${time}`);
+            let racetrackImgUrl = await fetchTrackImgFromCollection(raceName);
 
-        setNextRaceEvent({
-            raceName: raceName,
-            eventDate: eventDate,
-            racetrackImgUrl: racetrackImgUrl
-        });
-    }
+            dispatch(
+                setNextRaceEvent({
+                    raceName: raceName,
+                    eventDate: eventDate,
+                    racetrackImgUrl: racetrackImgUrl
+                })
+            );
+        },
+        [dispatch]
+    );
 
-    useEffect(() => {
-        getNextRaceData();
-    }, []);
+    useEffect(
+        () => {
+            if (nextRaceEvent === null) getNextRaceData();
+        },
+        [nextRaceEvent, getNextRaceData]
+    );
 
     return (
         <SectionWrapper>

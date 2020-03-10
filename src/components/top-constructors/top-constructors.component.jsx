@@ -1,40 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, forwardRef, useCallback } from 'react';
 import axios from 'axios';
+
+import { useStateValue } from '../../state/context';
+import { setTopContructorsData } from '../../state/actions';
+
 import { addCarImgsUrls } from '../../firebase/firebase.utils';
+
 import ConstructorTile from '../constructor-tile/constructor-tile.component';
 import { TopConstructorsWrapper, Title } from './top-constructors.styled';
 
-const TopConstructors = () => {
-    const [topContructors, setTopConstructors] = useState([]);
+const TopConstructors = forwardRef(({ elementVisibility }, ref) => {
+    const [{ topConstructors }, dispatch] = useStateValue();
 
-    const getTopContructorsData = async () => {
-        let res = await axios.get('http://ergast.com/api/f1/current/constructorStandings.json');
-        const topContructorsData = res.data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings.slice(0, 3);
+    const getTopContructorsData = useCallback(
+        async () => {
+            let res = await axios.get('http://ergast.com/api/f1/current/constructorStandings.json');
+            const topContructorsData = res.data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings.slice(0, 3);
 
-        const topContructorsDataFiltered = topContructorsData.map(constructorDataElem => {
-            return {
-                constructorId: constructorDataElem.Constructor.constructorId,
-                constructorName: constructorDataElem.Constructor.name,
-                position: constructorDataElem.position,
-                points: constructorDataElem.points
-            }
-        })
+            const topContructorsDataFiltered = topContructorsData.map(constructorDataElem => {
+                return {
+                    constructorId: constructorDataElem.Constructor.constructorId,
+                    constructorName: constructorDataElem.Constructor.name,
+                    position: constructorDataElem.position,
+                    points: constructorDataElem.points
+                }
+            })
 
-        let topContructorsDataWithImgs = await addCarImgsUrls(topContructorsDataFiltered);
+            let topContructorsDataWithImgs = await addCarImgsUrls(topContructorsDataFiltered);
 
-        setTopConstructors(
-            [...topContructorsDataWithImgs]
-        );
-    }
+            dispatch(
+                setTopContructorsData([...topContructorsDataWithImgs])
+            )
+        },
+        [dispatch]
+    );
 
-    useEffect(() => {
-        getTopContructorsData();
-    }, []);
+    useEffect(
+        () => {
+            if (topConstructors.length === 0) getTopContructorsData();
+        },
+        [topConstructors.length, getTopContructorsData]
+    );
+
 
     return (
-        <TopConstructorsWrapper reveal={topContructors.length > 0}>
+        <TopConstructorsWrapper reveal={elementVisibility && topConstructors.length > 0} ref={ref}>
             <Title>Best constructors</Title>
-            {topContructors.length > 0 && topContructors.map((constructorTeam, idx) => (
+            {elementVisibility && topConstructors.map((constructorTeam, idx) => (
                 <ConstructorTile
                     key={`${constructorTeam.constructorId}-${idx + 1}`}
                     constructorId={constructorTeam.constructorId}
@@ -46,6 +58,6 @@ const TopConstructors = () => {
             ))}
         </TopConstructorsWrapper>
     )
-}
+});
 
 export default TopConstructors;

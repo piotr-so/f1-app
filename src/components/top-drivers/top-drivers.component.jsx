@@ -1,26 +1,30 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
+
+import { useStateValue } from '../../state/context';
+import { addDriverStandings, setTopDriversData } from '../../state/actions';
+
 import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
+
 import DriverCard from '../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
 
 const TopDrivers = () => {
 
     const [isLoading, setIsLoading] = useState(true);
-    const [topDriversImg, setTopDriversImg] = useState([]);
-    const [topDrivers, setTopDrivers] = useState([]);
     const [scaledCardNum, setScaledCardNum] = useState(0);
     const [sliderWrapperProps, setSliderWrapperProps] = useState({
         isDraggable: false,
         startX: 0,
         startY: 0,
         lastTouch: 0
-    })
+    });
     const SliderPos = useRef();
+    const [{ topDrivers }, dispatch] = useStateValue();
 
     const getIntValOf = element => {
         return parseInt(element.replace("translateX(", "").replace("px)", ""), 10);
-    }
+    };
 
     const handleTouchStart = (e) => {
 
@@ -63,14 +67,14 @@ const TopDrivers = () => {
                 SliderPos.current.style.transform = `translateX(${newValue}px)`
             }
         }
-    }
+    };
 
     const handleTouchEnd = () => {
         setSliderWrapperProps(prevState => ({
             ...prevState,
             isDraggable: false
         }))
-    }
+    };
 
     const switchScaledCard = () => {
         const currentSliderOffset = getIntValOf(SliderPos.current.style.transform);
@@ -90,51 +94,58 @@ const TopDrivers = () => {
         else if (currentSliderOffset <= -730) {
             return setScaledCardNum(4);
         }
-    }
+    };
 
-    const getData = async () => {
-        let res = await axios.get('https://ergast.com/api/f1/2019/driverStandings.json');
-        const receivedData = res.data.MRData.StandingsTable.StandingsLists[0].DriverStandings.slice(0, 5);
-        setTopDrivers([...receivedData]);
+    const getData = useCallback(
+        async () => {
+            let res = await axios.get('https://ergast.com/api/f1/2019/driverStandings.json');
+            const receivedDriversData = res.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+            const selectedTopDriversData = receivedDriversData.slice(0, 5);
 
-        const driverNamesToFetchImgs = receivedData.map(driverItem => {
-            return driverItem.Driver.driverId;
-        })
+            const topDriverNamesToFetchImgs = selectedTopDriversData.map(driverItem => {
+                return driverItem.Driver.driverId;
+            });
 
-        let driverImgsList = await fetchDriverImgsFromCollection(driverNamesToFetchImgs);
-        setTopDriversImg([driverImgsList]);
-        window.localStorage.setItem('TopDriversData', JSON.stringify(receivedData));
-        window.localStorage.setItem('TopDriversImgs', JSON.stringify(driverImgsList));
-    }
+            let driverImgsList = await fetchDriverImgsFromCollection(topDriverNamesToFetchImgs);
+
+            const combineTopDriversDataWithImgs = (driverImgsList) => {
+
+                let combined = [];
+                combined = selectedTopDriversData;
+
+                combined.forEach(driverItem => driverItem.Driver.imageUrl = driverImgsList[driverItem.Driver.driverId]);
+                return combined;
+            };
+
+            const combinedData = combineTopDriversDataWithImgs(driverImgsList);
+
+
+            dispatch(
+                addDriverStandings(receivedDriversData)
+            );
+            dispatch(
+                setTopDriversData(combinedData)
+            );
+        },
+        [dispatch]
+    );
 
     const replaceWhitespaceInString = (str) => {
         return str.replace(/ /g, "")
-    }
+    };
 
-    useEffect(() => {
-        const TopDriversData = JSON.parse(window.localStorage.getItem('TopDriversData'));
-        const TopDriversImgs = JSON.parse(window.localStorage.getItem('TopDriversImgs'));
-
-        if (!TopDriversData && !TopDriversImgs) {
-            getData();
-        }
-        else {
-            setTopDrivers([...TopDriversData]);
-            setTopDriversImg([TopDriversImgs]);
-        }
-
-    }, [])
-
-    useEffect(() => {
-        if (topDriversImg.length > 0 && topDrivers.length > 0) {
-            setIsLoading(false);
-        }
-    }, [topDriversImg.length, topDrivers.length])
+    useEffect(
+        () => {
+            if (topDrivers.length === 0) getData();
+            else setIsLoading(false);
+        },
+        [topDrivers.length, getData]
+    );
 
     return (
         <TopDriversWrapper>
             <BackgroundBox reveal={!isLoading}>
-                <Title onClick={() => window.localStorage.clear()}>Top 5 drivers</Title>
+                <Title>Top 5 drivers</Title>
                 <CardsSlider>
                     <CardsSliderWrapper
                         onTouchStart={(e) => handleTouchStart(e)}
@@ -153,7 +164,7 @@ const TopDrivers = () => {
                                 points={item.points}
                                 constructorTeam={item.Constructors[0].name}
                                 teamBackgroundTheme={replaceWhitespaceInString(item.Constructors[0].name.toLowerCase())}
-                                img={topDriversImg.length > 0 ? topDriversImg[0][item.Driver.driverId] : 'emptyLoading'}
+                                img={topDrivers.length > 0 ? item.Driver.imageUrl : 'emptyLoading'}
                             />
                         )}
                     </CardsSliderWrapper>

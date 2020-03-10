@@ -8,9 +8,9 @@ const NavigationMenu = () => {
     const history = useHistory();
 
     const setRenderedImgComponent = (idx) => {
-        if (idx === 0) return <HomeImg isactive={isActive === idx} />;
-        if (idx === 1) return <DriversImg isactive={isActive === idx} />;
-        if (idx === 2) return <TeamsImg isactive={isActive === idx} />;
+        if (idx === 0) return <HomeImg isactive={isActive === idx ? "true" : undefined} />;
+        if (idx === 1) return <DriversImg isactive={isActive === idx ? "true" : undefined} />;
+        if (idx === 2) return <TeamsImg isactive={isActive === idx ? "true" : undefined} />;
     };
 
     const handleNavButtonClick = (idx, location) => {
@@ -22,12 +22,13 @@ const NavigationMenu = () => {
         <NavigationWrapper>
             {navButtonsDesc.map((buttonElem, idx) => (
                 <Button
-                    isactive={isActive === idx}
+                    key={buttonElem[0] + idx}
+                    isactive={isActive === idx ? "true" : undefined}
                     onClick={() => handleNavButtonClick(idx, buttonElem[1])}
                 >
-                    <ButtonContentWrapper isactive={isActive === idx}>
+                    <ButtonContentWrapper isactive={isActive === idx ? "true" : undefined}>
                         {setRenderedImgComponent(idx)}
-                        <Desc isactive={isActive === idx}>
+                        <Desc isactive={isActive === idx ? "true" : undefined}>
                             {buttonElem[0]}
                         </Desc>
                     </ButtonContentWrapper>
