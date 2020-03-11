@@ -9,7 +9,7 @@ import { addCarImgsUrls } from '../../firebase/firebase.utils';
 import ConstructorTile from '../constructor-tile/constructor-tile.component';
 import { TopConstructorsWrapper, Title } from './top-constructors.styled';
 
-const TopConstructors = forwardRef(({ elementVisibility }, ref) => {
+const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
     const [{ topConstructors }, dispatch] = useStateValue();
 
     const getTopContructorsData = useCallback(
@@ -44,7 +44,7 @@ const TopConstructors = forwardRef(({ elementVisibility }, ref) => {
 
 
     return (
-        <TopConstructorsWrapper reveal={elementVisibility && topConstructors.length > 0} ref={ref}>
+        <TopConstructorsWrapper reveal={elementVisibility && topConstructors.length > 0} ref={ref} id={id}>
             <Title>Best constructors</Title>
             {elementVisibility && topConstructors.map((constructorTeam, idx) => (
                 <ConstructorTile

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
 import axios from 'axios';
 
 import { useStateValue } from '../../state/context';
@@ -9,7 +9,7 @@ import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
 import DriverCard from '../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
 
-const TopDrivers = () => {
+const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [scaledCardNum, setScaledCardNum] = useState(0);
@@ -137,14 +137,14 @@ const TopDrivers = () => {
     useEffect(
         () => {
             if (topDrivers.length === 0) getData();
-            else setIsLoading(false);
+            // else setIsLoading(false);
         },
         [topDrivers.length, getData]
     );
 
     return (
         <TopDriversWrapper>
-            <BackgroundBox reveal={!isLoading}>
+            <BackgroundBox reveal={elementVisibility && topDrivers.length > 0} ref={ref} id={id}>
                 <Title>Top 5 drivers</Title>
                 <CardsSlider>
                     <CardsSliderWrapper
@@ -173,6 +173,6 @@ const TopDrivers = () => {
             <DottedBox />
         </TopDriversWrapper>
     );
-}
+});
 
 export default TopDrivers;

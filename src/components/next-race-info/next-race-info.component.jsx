@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, forwardRef } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -11,7 +11,7 @@ import CountdownTimer from '../countdown-timer/countdown-timer.component';
 
 import { SectionWrapper, RaceInfoBox, CheckeredFlag, ElementsWrapper, TrackImg } from './next-race-info.styled';
 
-const NextRace = () => {
+const NextRace = forwardRef(({ elementVisibility, id }, ref) => {
 
     const [{ nextRaceEvent }, dispatch] = useStateValue();
 
@@ -42,7 +42,7 @@ const NextRace = () => {
 
     return (
         <SectionWrapper>
-            <RaceInfoBox reveal={nextRaceEvent}>
+            <RaceInfoBox reveal={elementVisibility && nextRaceEvent} ref={ref} id={id}>
                 <CheckeredFlag />
                 <ElementsWrapper>
                     <span>Next</span>
@@ -53,6 +53,6 @@ const NextRace = () => {
             </RaceInfoBox>
         </SectionWrapper>
     );
-}
+});
 
 export default NextRace;
