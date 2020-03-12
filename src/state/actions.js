@@ -19,3 +19,8 @@ export const setTopContructorsData = topContructorsData => ({
     type: actionTypes.SET_TOP_CONSTRUCTORS,
     payload: topContructorsData
 });
+
+export const setDriversData = (driversData) => ({
+    type: actionTypes.SET_DRIVERS_DATA,
+    payload: driversData
+});
