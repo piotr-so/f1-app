@@ -1,16 +1,12 @@
-import styled, { css } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import { FontColors } from '../../modules/constants';
+import { revealTransitionSetting } from '../../modules/animations.styled';
 
 export const TopConstructorsWrapper = styled.section`
     min-height: 356px;
     margin: 24px 0 60px 0;
     opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.7s ease-in;
-    ${props => props.reveal && css`
-        transform: translateY(0);
-        opacity: 1;
-    `}
+    ${revealTransitionSetting}
 `;
 export const Title = styled.h1`
     font-size: 20px;

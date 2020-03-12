@@ -29,6 +29,11 @@ export const reducer = (state, action) => {
                 ...state,
                 nextRaceEvent: action.payload
             };
+        case actionTypes.SET_DRIVERS_DATA:
+            return {
+                ...state,
+                drivers: action.payload
+            };
         default:
             return state;
     }

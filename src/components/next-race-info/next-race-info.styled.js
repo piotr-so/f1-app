@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components/macro';
 import { FontColors } from '../../modules/constants';
 import checkeredFlagImg from '../../assets/backgrounds/checkered-flag.svg'
 
-export const SectionWrapper = styled.section`
+export const NextRaceEventWrapper = styled.section`
     display: flex;
     justify-content: center;
     padding: 24px;
