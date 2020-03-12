@@ -9,7 +9,7 @@ import { fetchTrackImgFromCollection } from '../../firebase/firebase.utils';
 
 import CountdownTimer from '../countdown-timer/countdown-timer.component';
 
-import { SectionWrapper, RaceInfoBox, CheckeredFlag, ElementsWrapper, TrackImg } from './next-race-info.styled';
+import { NextRaceEventWrapper, RaceInfoBox, CheckeredFlag, ElementsWrapper, TrackImg } from './next-race-info.styled';
 
 const NextRace = forwardRef(({ elementVisibility, id }, ref) => {
 
@@ -41,7 +41,7 @@ const NextRace = forwardRef(({ elementVisibility, id }, ref) => {
     );
 
     return (
-        <SectionWrapper>
+        <NextRaceEventWrapper>
             <RaceInfoBox reveal={elementVisibility && nextRaceEvent} ref={ref} id={id}>
                 <CheckeredFlag />
                 <ElementsWrapper>
@@ -51,7 +51,7 @@ const NextRace = forwardRef(({ elementVisibility, id }, ref) => {
                 </ElementsWrapper>
                 <CountdownTimer eventDate={nextRaceEvent && nextRaceEvent.eventDate} />
             </RaceInfoBox>
-        </SectionWrapper>
+        </NextRaceEventWrapper>
     );
 });
 

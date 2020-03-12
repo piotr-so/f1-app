@@ -11,7 +11,6 @@ import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsS
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
-    const [isLoading, setIsLoading] = useState(true);
     const [scaledCardNum, setScaledCardNum] = useState(0);
     const [sliderWrapperProps, setSliderWrapperProps] = useState({
         isDraggable: false,
@@ -130,14 +129,9 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         [dispatch]
     );
 
-    const replaceWhitespaceInString = (str) => {
-        return str.replace(/ /g, "")
-    };
-
     useEffect(
         () => {
             if (topDrivers.length === 0) getData();
-            // else setIsLoading(false);
         },
         [topDrivers.length, getData]
     );
@@ -163,7 +157,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                                 name={item.Driver.familyName}
                                 points={item.points}
                                 constructorTeam={item.Constructors[0].name}
-                                teamBackgroundTheme={replaceWhitespaceInString(item.Constructors[0].name.toLowerCase())}
+                                teamBackgroundTheme={item.Constructors[0].constructorId}
                                 img={topDrivers.length > 0 ? item.Driver.imageUrl : 'emptyLoading'}
                             />
                         )}

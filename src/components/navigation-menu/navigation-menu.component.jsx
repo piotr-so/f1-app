@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { NavigationWrapper, Button, ButtonContentWrapper, HomeImg, DriversImg, TeamsImg, Desc } from './navigation-menu.styled';
 
 const NavigationMenu = () => {
-    const [isActive, setIsActive] = useState(0);
     const navButtonsDesc = [["Home", "/"], ["Drivers", "/driver-standings"], ["Teams", "/constructor-standings"]];
     const history = useHistory();
+    const location = useLocation();
+
+    const { pathname } = location;
 
     const setRenderedImgComponent = (idx) => {
-        if (idx === 0) return <HomeImg isactive={isActive === idx ? "true" : undefined} />;
-        if (idx === 1) return <DriversImg isactive={isActive === idx ? "true" : undefined} />;
-        if (idx === 2) return <TeamsImg isactive={isActive === idx ? "true" : undefined} />;
+        if (idx === 0) return <HomeImg isactive={pathname === '/' ? "true" : undefined} />;
+        if (idx === 1) return <DriversImg isactive={pathname === '/driver-standings' ? "true" : undefined} />;
+        if (idx === 2) return <TeamsImg isactive={pathname === '/constructor-standings' ? "true" : undefined} />;
     };
 
-    const handleNavButtonClick = (idx, location) => {
-        setIsActive(idx);
-        history.push(location);
+    const handleNavButtonClick = (destinationLocation) => {
+        history.push(destinationLocation);
     }
 
     return (
@@ -23,12 +24,12 @@ const NavigationMenu = () => {
             {navButtonsDesc.map((buttonElem, idx) => (
                 <Button
                     key={buttonElem[0] + idx}
-                    isactive={isActive === idx ? "true" : undefined}
-                    onClick={() => handleNavButtonClick(idx, buttonElem[1])}
+                    isactive={pathname === buttonElem[1] ? "true" : undefined}
+                    onClick={() => handleNavButtonClick(buttonElem[1])}
                 >
-                    <ButtonContentWrapper isactive={isActive === idx ? "true" : undefined}>
+                    <ButtonContentWrapper isactive={pathname === buttonElem[1] ? "true" : undefined}>
                         {setRenderedImgComponent(idx)}
-                        <Desc isactive={isActive === idx ? "true" : undefined}>
+                        <Desc isactive={pathname === buttonElem[1] ? "true" : undefined}>
                             {buttonElem[0]}
                         </Desc>
                     </ButtonContentWrapper>
