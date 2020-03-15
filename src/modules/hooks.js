@@ -1,7 +1,7 @@
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useStateValue } from '../state/context';
-import { setDriversData } from '../state/actions';
+import { setDriversData, setConstructorsData } from '../state/actions';
 import axios from 'axios';
 
 export const useIO = (options) => {
@@ -37,22 +37,33 @@ export const useIO = (options) => {
 
 export const useGetData = () => {
 	const [requestedData, setRequestedData] = useState();
-	const [state, dispatch] = useStateValue();
+	const [, dispatch] = useStateValue();
+
+	const fetchData = useCallback(
+		async (dataTypeName) => {
+			const dataTypesUrls = {
+				'drivers-data': 'https://ergast.com/api/f1/2019/driverStandings.json',
+				'constructors-data': 'https://ergast.com/api/f1/2019/constructorStandings.json'
+			};
+			let res = await axios.get(dataTypesUrls[dataTypeName]);
+
+			if (dataTypeName === 'drivers-data') {
+				const receivedData = res.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+				dispatch(setDriversData(receivedData));
+			}
+			else if (dataTypeName === 'constructors-data') {
+				const receivedData = res.data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
+				dispatch(setConstructorsData(receivedData))
+			}
+		},
+		[dispatch]
+	);
 
 	useEffect(
 		() => {
-			if (requestedData === 'drivers-data') {
-				const fetch = async () => {
-					let res = await axios.get('https://ergast.com/api/f1/2019/driverStandings.json');
-					const receivedDriversData = res.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-					dispatch(
-						setDriversData(receivedDriversData)
-					);
-				}
-				fetch();
-			}
+			if (requestedData !== undefined) fetchData(requestedData);
 		},
-		[requestedData, dispatch]
+		[fetchData, requestedData]
 	);
 
 	return [setRequestedData]

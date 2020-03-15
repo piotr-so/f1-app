@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
-import axios from 'axios';
+import React, { useState, useRef, useEffect, forwardRef, useCallback } from 'react';
 
 import { useStateValue } from '../../state/context';
-import { addDriverStandings, setTopDriversData } from '../../state/actions';
-
+import { useGetData } from '../../modules/hooks';
 import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
 
 import DriverCard from '../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
+
+    const [{ drivers }] = useStateValue();
+    const [topDriversData, setTopDriversData] = useState([]);
+    const [setRequestedData] = useGetData();
 
     const [scaledCardNum, setScaledCardNum] = useState(0);
     const [sliderWrapperProps, setSliderWrapperProps] = useState({
@@ -19,7 +21,6 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         lastTouch: 0
     });
     const SliderPos = useRef();
-    const [{ topDrivers }, dispatch] = useStateValue();
 
     const getIntValOf = element => {
         return parseInt(element.replace("translateX(", "").replace("px)", ""), 10);
@@ -95,13 +96,10 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         }
     };
 
-    const getData = useCallback(
+    const selectTopDriversData = useCallback(
         async () => {
-            let res = await axios.get('https://ergast.com/api/f1/2019/driverStandings.json');
-            const receivedDriversData = res.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-            const selectedTopDriversData = receivedDriversData.slice(0, 5);
-
-            const topDriverNamesToFetchImgs = selectedTopDriversData.map(driverItem => {
+            const topDrivers = drivers.slice(0, 5);
+            const topDriverNamesToFetchImgs = topDrivers.map(driverItem => {
                 return driverItem.Driver.driverId;
             });
 
@@ -110,7 +108,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
             const combineTopDriversDataWithImgs = (driverImgsList) => {
 
                 let combined = [];
-                combined = selectedTopDriversData;
+                combined = topDrivers;
 
                 combined.forEach(driverItem => driverItem.Driver.imageUrl = driverImgsList[driverItem.Driver.driverId]);
                 return combined;
@@ -118,27 +116,22 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
             const combinedData = combineTopDriversDataWithImgs(driverImgsList);
 
-
-            dispatch(
-                addDriverStandings(receivedDriversData)
-            );
-            dispatch(
-                setTopDriversData(combinedData)
-            );
+            setTopDriversData(combinedData);
         },
-        [dispatch]
+        [drivers]
     );
 
     useEffect(
         () => {
-            if (topDrivers.length === 0) getData();
+            if (drivers.length === 0) setRequestedData('drivers-data');
+            if (drivers.length > 0) selectTopDriversData();
         },
-        [topDrivers.length, getData]
+        [drivers.length, selectTopDriversData, setRequestedData]
     );
 
     return (
         <TopDriversWrapper>
-            <BackgroundBox reveal={elementVisibility && topDrivers.length > 0} ref={ref} id={id}>
+            <BackgroundBox reveal={elementVisibility && topDriversData.length > 0} ref={ref} id={id}>
                 <Title>Top 5 drivers</Title>
                 <CardsSlider>
                     <CardsSliderWrapper
@@ -148,7 +141,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                         ref={SliderPos}
                         style={{ 'transform': `translateX(${0}px)` }}
                     >
-                        {topDrivers.length > 0 && topDrivers.map((item, idx) =>
+                        {topDriversData.length > 0 && topDriversData.map((item, idx) =>
                             <DriverCard
                                 key={`card-${idx}`}
                                 scaled={scaledCardNum !== idx}
@@ -158,7 +151,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                                 points={item.points}
                                 constructorTeam={item.Constructors[0].name}
                                 teamBackgroundTheme={item.Constructors[0].constructorId}
-                                img={topDrivers.length > 0 ? item.Driver.imageUrl : 'emptyLoading'}
+                                img={item.Driver.imageUrl}
                             />
                         )}
                     </CardsSliderWrapper>

@@ -1,23 +1,22 @@
-import React, { useEffect, forwardRef, useCallback } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, forwardRef, useCallback } from 'react';
 
 import { useStateValue } from '../../state/context';
-import { setTopContructorsData } from '../../state/actions';
-
+import { useGetData } from '../../modules/hooks';
 import { addCarImgsUrls } from '../../firebase/firebase.utils';
 
 import ConstructorTile from '../constructor-tile/constructor-tile.component';
 import { TopConstructorsWrapper, Title } from './top-constructors.styled';
 
 const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
-    const [{ topConstructors }, dispatch] = useStateValue();
+    const [{ constructors }] = useStateValue();
+    const [topConstructors, setTopConstructors] = useState([]);
+    const [setRequestedData] = useGetData();
 
-    const getTopContructorsData = useCallback(
+    const selectTopConstructorsData = useCallback(
         async () => {
-            let res = await axios.get('http://ergast.com/api/f1/current/constructorStandings.json');
-            const topContructorsData = res.data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings.slice(0, 3);
+            const topConstructors = constructors.slice(0, 3);
 
-            const topContructorsDataFiltered = topContructorsData.map(constructorDataElem => {
+            const topContructorsDataFiltered = topConstructors.map(constructorDataElem => {
                 return {
                     constructorId: constructorDataElem.Constructor.constructorId,
                     constructorName: constructorDataElem.Constructor.name,
@@ -28,18 +27,17 @@ const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
 
             let topContructorsDataWithImgs = await addCarImgsUrls(topContructorsDataFiltered);
 
-            dispatch(
-                setTopContructorsData([...topContructorsDataWithImgs])
-            )
+            setTopConstructors(topContructorsDataWithImgs);
         },
-        [dispatch]
+        [constructors]
     );
 
     useEffect(
         () => {
-            if (topConstructors.length === 0) getTopContructorsData();
+            if (constructors.length === 0) setRequestedData('constructors-data');
+            if (constructors.length > 0) selectTopConstructorsData();
         },
-        [topConstructors.length, getTopContructorsData]
+        [constructors.length, setRequestedData, selectTopConstructorsData]
     );
 
 
