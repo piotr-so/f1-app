@@ -24,6 +24,8 @@ const DriverStandings = () => {
 
     useEffect(
         () => {
+            window.scrollTo(0,0);
+            
             if (drivers.length === 0) {
                 setRequestedData('drivers-data');
             }

@@ -5,7 +5,6 @@ import { revealTransitionSetting } from '../../modules/animations.styled';
 export const TopConstructorsWrapper = styled.section`
     min-height: 356px;
     margin: 24px 0 60px 0;
-    opacity: 0;
     ${revealTransitionSetting}
 `;
 export const Title = styled.h1`

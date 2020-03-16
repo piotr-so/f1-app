@@ -3,14 +3,14 @@ import React, { useState, useRef, useEffect, forwardRef, useCallback } from 'rea
 import { useStateValue } from '../../state/context';
 import { useGetData } from '../../modules/hooks';
 import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
+import { setTopDriversData } from '../../state/actions';
 
 import DriverCard from '../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
-    const [{ drivers }] = useStateValue();
-    const [topDriversData, setTopDriversData] = useState([]);
+    const [{ drivers, topDriversData }, dispatch] = useStateValue();
     const [setRequestedData] = useGetData();
 
     const [scaledCardNum, setScaledCardNum] = useState(0);
@@ -116,9 +116,12 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
             const combinedData = combineTopDriversDataWithImgs(driverImgsList);
 
-            setTopDriversData(combinedData);
+            dispatch(
+                setTopDriversData(combinedData)
+            );
+
         },
-        [drivers]
+        [drivers, dispatch]
     );
 
     useEffect(

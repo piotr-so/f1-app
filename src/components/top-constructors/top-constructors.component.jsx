@@ -1,6 +1,7 @@
-import React, { useEffect, useState, forwardRef, useCallback } from 'react';
+import React, { useEffect, forwardRef, useCallback } from 'react';
 
 import { useStateValue } from '../../state/context';
+import { setTopConstructorsData } from '../../state/actions';
 import { useGetData } from '../../modules/hooks';
 import { addCarImgsUrls } from '../../firebase/firebase.utils';
 
@@ -8,8 +9,7 @@ import ConstructorTile from '../constructor-tile/constructor-tile.component';
 import { TopConstructorsWrapper, Title } from './top-constructors.styled';
 
 const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
-    const [{ constructors }] = useStateValue();
-    const [topConstructors, setTopConstructors] = useState([]);
+    const [{ constructors, topConstructorsData }, dispatch] = useStateValue();
     const [setRequestedData] = useGetData();
 
     const selectTopConstructorsData = useCallback(
@@ -26,10 +26,11 @@ const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
             })
 
             let topContructorsDataWithImgs = await addCarImgsUrls(topContructorsDataFiltered);
-
-            setTopConstructors(topContructorsDataWithImgs);
+            dispatch(
+                setTopConstructorsData(topContructorsDataWithImgs)
+            );
         },
-        [constructors]
+        [constructors, dispatch]
     );
 
     useEffect(
@@ -42,9 +43,9 @@ const TopConstructors = forwardRef(({ elementVisibility, id }, ref) => {
 
 
     return (
-        <TopConstructorsWrapper reveal={elementVisibility && topConstructors.length > 0} ref={ref} id={id}>
+        <TopConstructorsWrapper reveal={elementVisibility && topConstructorsData.length > 0} ref={ref} id={id}>
             <Title>Best constructors</Title>
-            {elementVisibility && topConstructors.map((constructorTeam, idx) => (
+            {elementVisibility && topConstructorsData.length && topConstructorsData.map((constructorTeam, idx) => (
                 <ConstructorTile
                     key={`${constructorTeam.constructorId}-${idx + 1}`}
                     constructorId={constructorTeam.constructorId}

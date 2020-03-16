@@ -1,5 +1,6 @@
-import styled, { css } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import { FontColors, BackgroundColors } from '../../modules/constants';
+import { revealTransitionSetting } from '../../modules/animations.styled';
 import dottedNetImg from '../../assets/backgrounds/dotted-net.png';
 
 export const TopDriversWrapper = styled.section`
@@ -12,14 +13,7 @@ export const BackgroundBox = styled.div`
     height: 360px;
     background-color: ${BackgroundColors.main};
     z-index: 2;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.7s;
-
-    ${props => props.reveal && css`
-        transform: translateY(0);
-        opacity: 1;
-    `}
+    ${revealTransitionSetting}
 `;
 export const Title = styled.h1`
     font-size: 20px;

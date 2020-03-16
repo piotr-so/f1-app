@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { useIO } from '../../modules/hooks';
+import { useStateValue } from '../../state/context';
+import { setTopConstructorsVisible, saveWindowPos } from '../../state/actions';
 
 import NextRace from '../../components/next-race-info/next-race-info.component';
 import TopDrivers from '../../components/top-drivers/top-drivers.component';
@@ -10,59 +12,61 @@ import './Home.styled';
 
 const Home = () => {
 
-  const [elementVisibility, setElementVisibility] = useState({
-    nextRace: false,
-    topDrivers: false,
-    topConstructors: false
-  });
+  const [{ topConstructorsVisible, windowPositions }, dispatch] = useStateValue();
 
-  const nextRaceRef = useRef();
-  const topDriversRef = useRef();
   const topConstructorsRef = useRef();
 
-  const [observer, setElements, entries] = useIO({ threshold: 0.5 });
+  const [observer, setElements, entries] = useIO({ threshold: 0.2 });
 
   useEffect(
     () => {
-      const currentElements = [nextRaceRef.current, topDriversRef.current, topConstructorsRef.current];
+      if (windowPositions.Home) {
+        window.scrollTo(0, 0);
+        setTimeout(() => window.scrollTo({ top: windowPositions.Home, behavior: 'smooth'}), 100);
+      };
+
+      const currentElements = [topConstructorsRef.current];
       setElements(currentElements);
+
+      return () => {
+        dispatch(
+          saveWindowPos({
+            'Home': window.scrollY
+          })
+        )
+      }
     },
-    [setElements]
+    [setElements, dispatch, windowPositions.Home]
   );
 
   useEffect(
     () => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          setElementVisibility(prevState => ({
-            ...prevState,
-            [entry.target.id]: true
-          }));
+          dispatch(
+            setTopConstructorsVisible()
+          );
           observer.unobserve(entry.target);
         }
       })
     },
-    [entries, observer]
+    [entries, observer, dispatch]
   );
-
-  const { nextRace, topDrivers, topConstructors } = elementVisibility;
 
   return (
     <>
       <NextRace
-        ref={nextRaceRef}
         id={'nextRace'}
-        elementVisibility={nextRace}
+        elementVisibility={true}
       />
       <TopDrivers
-        ref={topDriversRef}
         id={'topDrivers'}
-        elementVisibility={topDrivers}
+        elementVisibility={true}
       />
       <TopConstructors
         ref={topConstructorsRef}
         id={'topConstructors'}
-        elementVisibility={topConstructors}
+        elementVisibility={topConstructorsVisible}
       />
     </>
   );

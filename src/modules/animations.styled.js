@@ -6,6 +6,7 @@ const reveal = css`
 `;
 
 export const revealTransitionSetting = css`
+    opacity: 0;
     transform: translateY(-10px);
     transition: all .7s ease-in;
     ${props => props.reveal && reveal}
