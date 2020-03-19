@@ -1,6 +1,7 @@
 export const FontColors = {
     main: "#5A5A5A",
     secondary: "#FFFFFF",
+    tertiary: '#EE0000',
     driverCard: "#5A5A5A",
     driverStandingsTitle: "#EE0000",
     navElemActive: "#EE0000"
@@ -19,7 +20,7 @@ export const BackgroundColors = {
         alfa: "#9B0000",
         haas: "#FFFFFF",
         mclaren: "#FF8700",
-        racing_point: "",
+        racing_point: "#F596C8",
         red_bull: "#1E41FF",
         toro_rosso: "#4498F9",
         williams: "#FFFFFF"

@@ -79,3 +79,15 @@ export const addCarImgsUrls = (topContructorsData) => {
         })
     return result
 }
+
+export const fetchDriverOverviewImgFromCollection = (driverId) => {
+    const docRef = firestore.collection('driversCollection').doc('driver-overview-img');
+    const resultUrl =
+        docRef
+            .get()
+            .then(
+                (doc) => doc.data()[driverId]
+            )
+            .catch(error => console.log(error));
+    return resultUrl
+}

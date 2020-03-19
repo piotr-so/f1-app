@@ -4,11 +4,12 @@ import DriverPoints from '../driver-points/driver-points.component';
 
 import { DriverBarWrapper, FullName } from './driver-bar.styled';
 
-const DriverBar = forwardRef(({ driver, points, position, theme }, ref) => {
+const DriverBar = forwardRef(({ driver, points, position, theme, driverId, onClickFn }, ref) => {
     const { givenName, familyName } = driver;
 
     return (
         <DriverBarWrapper
+            onClick={() => onClickFn(driverId)}
             theme={theme}
             number={position}
             ref={ref}

@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { FontColors, BackgroundColors } from '../../modules/constants';
-import { revealAnimationSetting } from '../../modules/animations.styled';
+import { revealAnimation } from '../../modules/animations.styled';
 
 const { constructorTheme } = BackgroundColors;
 
@@ -22,7 +22,7 @@ export const DriverBarWrapper = styled.div`
     border-radius: 10px;
     box-sizing: border-box;
     
-    ${revealAnimationSetting};
+    ${revealAnimation};
 
     &::before {
         content: "${props => props.number}";

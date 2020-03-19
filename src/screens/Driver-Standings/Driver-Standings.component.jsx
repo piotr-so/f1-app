@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { useIO, useGetData } from '../../modules/hooks';
 import { useStateValue } from '../../state/context';
@@ -8,6 +9,10 @@ import DriverBar from '../../components/driver-bar/driver-bar.component';
 import { DriverStandingsWrapper, Title, DriverBarsContainer, DottedNetBg1, DottedNetBg2, DottedNetBg3 } from './Driver-Standings.styled';
 
 const DriverStandings = () => {
+
+    let history = useHistory();
+    let location = useLocation();
+
     const [{ drivers }] = useStateValue();
     const [visibleElement, setVisibleElements] = useState({
         visibleElemsArr: [],
@@ -22,10 +27,20 @@ const DriverStandings = () => {
 
     const { visibleElemsArr, visible } = visibleElement;
 
+    const handleClick = (driverId) => {
+        history.push(`${location.pathname}/drivers/${driverId}`);
+    };
+
     useEffect(
         () => {
-            window.scrollTo(0,0);
-            
+            window.scrollTo(0, 0);
+        },
+        []
+    );
+
+    useEffect(
+        () => {
+
             if (drivers.length === 0) {
                 setRequestedData('drivers-data');
             }
@@ -75,6 +90,8 @@ const DriverStandings = () => {
             <DriverBarsContainer>
                 {visibleElemsArr.length > 0 && visibleElemsArr.map((driverElem, idx) =>
                     <DriverBar
+                        onClickFn={handleClick}
+                        driverId={driverElem.Driver.driverId}
                         key={driverElem.Driver.driverId}
                         driver={driverElem.Driver}
                         points={driverElem.points}

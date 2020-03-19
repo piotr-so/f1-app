@@ -37,6 +37,8 @@ export const NavigationWrapper = styled.div`
     height: 60px;
     background-color: ${BackgroundColors.secondary};
     z-index: 999;
+    transition: transform .2s linear;
+    ${props => props.visible ? 'transform: translateY(0)' : 'transform: translateY(60px)'};
 `;
 
 export const Button = styled.div`

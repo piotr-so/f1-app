@@ -1,11 +1,31 @@
 import React from 'react';
-import { AppHeader, Logo } from './header.styled';
+import { useHistory } from 'react-router-dom';
 
-const Header = () => {
+import { HeaderWrapper, Logo, ArrowContainer, ArrowBack, Title } from './header.styled';
+
+const Header = ({ unmountFn, type }) => {
+    let history = useHistory();
+
+    const handleClick = () => {
+        unmountFn(true);
+        setTimeout(() => history.goBack(), 400);
+    };
+
     return (
-        <AppHeader>
-            <Logo />
-        </AppHeader>
+        <HeaderWrapper
+            headerType={type}
+        >
+            {type === 'app-header' ?
+                <Logo />
+                :
+                <>
+                    <ArrowContainer onClick={() => handleClick()}>
+                        <ArrowBack />
+                    </ArrowContainer>
+                    <Title>Driver</Title>
+                </>
+            }
+        </HeaderWrapper>
     );
 }
 

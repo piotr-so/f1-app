@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef, useCallback } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { useStateValue } from '../../state/context';
 import { useGetData } from '../../modules/hooks';
@@ -9,6 +10,9 @@ import DriverCard from '../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
+
+    let history = useHistory();
+    let location = useLocation();
 
     const [{ drivers, topDriversData }, dispatch] = useStateValue();
     const [setRequestedData] = useGetData();
@@ -96,6 +100,11 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         }
     };
 
+    const handleDriverCardClick = (driverId) => {
+        document.body.style.overflow = 'hidden';
+        history.push(`${location.pathname}/drivers/${driverId}`);
+    };
+
     const selectTopDriversData = useCallback(
         async () => {
             const topDrivers = drivers.slice(0, 5);
@@ -147,6 +156,8 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                         {topDriversData.length > 0 && topDriversData.map((item, idx) =>
                             <DriverCard
                                 key={`card-${idx}`}
+                                driverId={item.Driver.driverId}
+                                onClickFn={handleDriverCardClick}
                                 scaled={scaledCardNum !== idx}
                                 fixPosition={idx > 0 && true}
                                 position={item.position}

@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { FontColors } from '../../modules/constants';
-import { revealTransitionSetting } from '../../modules/animations.styled';
+import { revealWithTranslateYTransition } from '../../modules/animations.styled';
 import checkeredFlagImg from '../../assets/backgrounds/checkered-flag.svg'
 
 export const NextRaceEventWrapper = styled.section`
@@ -14,7 +14,7 @@ export const RaceInfoBox = styled.div`
     height: 200px;
     border: 1px solid red;
     border-radius: 0 0 5px 5px;
-    ${revealTransitionSetting}
+    ${revealWithTranslateYTransition}
 `;
 
 export const CheckeredFlag = styled.div`
