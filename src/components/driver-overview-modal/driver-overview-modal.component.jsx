@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { useStateValue } from '../../state/context';
 
@@ -40,7 +40,7 @@ const DriverOverviewModal = () => {
                     return driverItem.Driver.driverId === driverId
                 })
             );
-            const driverAge = moment().diff(`${filteredDriverDataFromStore[0].Driver.dateOfBirth}`, 'years');
+            const driverAge = dayjs().diff(`${filteredDriverDataFromStore[0].Driver.dateOfBirth}`, 'years');
 
             const combinedDriverOverviewData = {
                 driverAge: driverAge,

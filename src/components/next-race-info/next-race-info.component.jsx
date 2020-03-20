@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, forwardRef } from 'react';
 import axios from 'axios';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { useStateValue } from '../../state/context';
 import { setNextRaceEvent } from '../../state/actions';
@@ -19,7 +19,7 @@ const NextRace = forwardRef(({ elementVisibility, id }, ref) => {
         async () => {
             let res = await axios.get('https://ergast.com/api/f1/2020/next.json');
             const { raceName, date, time } = res.data.MRData.RaceTable.Races[0];
-            const eventDate = moment(`${date} ${time}`);
+            const eventDate = dayjs(`${date} ${time}`);
             let racetrackImgUrl = await fetchTrackImgFromCollection(raceName);
 
             dispatch(

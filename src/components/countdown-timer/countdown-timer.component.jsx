@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { BoxWrapper, Element, Number, Description, Separator } from './countdown-timer.styled';
 
@@ -13,8 +13,8 @@ const CountdownTimer = ({ eventDate }) => {
     });
 
     const countTimeLeft = useCallback(() => {
-        const presentDate = moment();
-        const timeLeftToEvent = moment(eventDate - presentDate);
+        const presentDate = dayjs();
+        const timeLeftToEvent = dayjs(eventDate - presentDate);
 
         const days = timeLeftToEvent.format('D');
         const hours = timeLeftToEvent.format('HH');
