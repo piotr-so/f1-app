@@ -1,7 +1,6 @@
 import styled from 'styled-components/macro';
 import { FontColors } from '../../modules/constants';
 import { revealWithTranslateYTransition } from '../../modules/animations.styled';
-import checkeredFlagImg from '../../assets/backgrounds/checkered-flag.svg'
 
 export const NextRaceEventWrapper = styled.section`
     display: flex;
@@ -20,7 +19,14 @@ export const RaceInfoBox = styled.div`
 export const CheckeredFlag = styled.div`
     max-width: 327px;
     height: 32px;
-    background-image: url(${checkeredFlagImg});
+    background-image:
+    linear-gradient(45deg, #000000 25%, transparent 25%), 
+    linear-gradient(-45deg, #000000 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #000000 75%),
+    linear-gradient(-45deg, transparent 75%, #000000 75%);
+
+    background-size:16px 16px;    
+    background-position:0px -8px,0px 16px,8px -16px,-8px 8px;
 `;
 
 export const ElementsWrapper = styled.div`

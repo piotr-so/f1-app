@@ -96,7 +96,7 @@ const DriverStandings = () => {
                         driver={driverElem.Driver}
                         points={driverElem.points}
                         position={driverElem.position}
-                        theme={driverElem.Constructors[0].constructorId}
+                        theme={driverElem.Constructors[driverElem.Constructors.length - 1].constructorId}
                         ref={idx === visibleElemsArr.length - 1 ? lastElementRef : undefined}
                     />
                 )}

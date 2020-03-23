@@ -74,8 +74,8 @@ const DriverOverviewModal = () => {
                 name: data.Driver.givenName,
                 lastName: data.Driver.familyName,
                 position: data.position,
-                teamId: data.Constructors[0].constructorId,
-                teamName: data.Constructors[0].name
+                teamId: data.Constructors[data.Constructors.length - 1].constructorId,
+                teamName: data.Constructors[data.Constructors.length - 1].name
             });
         },
         [location.pathname, drivers]

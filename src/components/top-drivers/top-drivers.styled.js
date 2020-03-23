@@ -1,7 +1,6 @@
 import styled from 'styled-components/macro';
 import { FontColors, BackgroundColors } from '../../modules/constants';
 import { revealWithTranslateYTransition } from '../../modules/animations.styled';
-import dottedNetImg from '../../assets/backgrounds/dotted-net.png';
 
 export const TopDriversWrapper = styled.section`
     display: flex;
@@ -25,8 +24,10 @@ export const DottedBox = styled.div`
     align-self: flex-end;
     width: 224px;
     height: 72px;
-    background: url(${dottedNetImg});
+    background: radial-gradient(${BackgroundColors.main} 20%, rgba(0,0,0,0) 25%);
+    background-size: 15px 15px;
     z-index: 1;
+    ${revealWithTranslateYTransition}
 `;
 export const CardsSlider = styled.div`
     position: absolute;

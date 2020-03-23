@@ -163,15 +163,15 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                                 position={item.position}
                                 name={item.Driver.familyName}
                                 points={item.points}
-                                constructorTeam={item.Constructors[0].name}
-                                teamBackgroundTheme={item.Constructors[0].constructorId}
+                                constructorTeam={item.Constructors[item.Constructors.length - 1].name}
+                                teamBackgroundTheme={item.Constructors[item.Constructors.length - 1].constructorId}
                                 img={item.Driver.imageUrl}
                             />
                         )}
                     </CardsSliderWrapper>
                 </CardsSlider>
             </BackgroundBox>
-            <DottedBox />
+            <DottedBox reveal={elementVisibility && topDriversData.length > 0}/>
         </TopDriversWrapper>
     );
 });
