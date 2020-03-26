@@ -5,8 +5,8 @@
   "background_color": "#ee0000",
   "display": "standalone",
   "orientation": "portrait",
-  "Scope": "/",
-  "start_url": "/",
+  "Scope": ".",
+  "start_url": "./home",
   "icons": [
     {
       "src": "icons/192x192.png",
