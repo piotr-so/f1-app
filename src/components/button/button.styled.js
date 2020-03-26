@@ -12,4 +12,6 @@ export const StyledButton = styled.button`
     box-shadow: 3px 3px 6px #00000029;
     border: 1px solid #EE0000;
     border-radius: 10px;
+
+    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
 `;

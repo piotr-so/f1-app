@@ -26,6 +26,12 @@ const growBackground = keyframes`
     }
 `;
 
+const smarthPhoneViewStyles = css`
+    position: absolute;
+    width: 354px;
+    border-radius: 0 0 32px 32px;
+`;
+
 export const NavigationWrapper = styled.div`
     position: fixed;
     bottom: 0;
@@ -39,6 +45,7 @@ export const NavigationWrapper = styled.div`
     z-index: 999;
     transition: transform .2s linear;
     ${props => props.visible ? 'transform: translateY(0)' : 'transform: translateY(60px)'};
+    ${props => props.type && smarthPhoneViewStyles};
 `;
 
 export const Button = styled.div`
@@ -73,6 +80,8 @@ export const ButtonContentWrapper = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+
+    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
 
     &::before {
         content: '';

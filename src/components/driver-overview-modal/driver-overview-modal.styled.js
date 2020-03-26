@@ -14,9 +14,19 @@ export const StyledDriverOverviewModal = styled.div`
     z-index: 999;
     width: 100%;
     height: 100%;
+    ${props => props.type && css`
+        position: absolute;
+        width: 354px;
+        height: 639px;
+        margin: 48px auto;
+        top: 0;
+    `};
 `;
 
 export const ModalWrapper = styled.div`
+    ${props => props.type && css`
+        border-radius: 0 0 32px 32px;
+    `};
     background-color: ${BackgroundColors.secondary};
     
     ${slideUpFromBottomAnimation};
@@ -29,6 +39,12 @@ export const ModalWrapper = styled.div`
 export const ContentWrapper = styled.div`
     height: calc(${window.innerHeight}px - 64px);
     overflow-y: scroll;
+    ${props => props.type && css`
+        height: 575px;
+        &::-webkit-scrollbar {
+            display: none;
+        };
+    `};
 `;
 
 export const DriverBackground = styled.div`

@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { NavigationWrapper, Button, ButtonContentWrapper, HomeImg, DriversImg, TeamsImg, Desc } from './navigation-menu.styled';
 
-const NavigationMenu = () => {
+const NavigationMenu = ({type}) => {
     const navButtonsDesc = [["Home", "/home"], ["Drivers", "/driver-standings"], ["Teams", "/constructor-standings"]];
     const history = useHistory();
     const location = useLocation();
@@ -31,6 +31,7 @@ const NavigationMenu = () => {
 
     return (
         <NavigationWrapper
+            type={type}
             visible={
                 pathname === navButtonsDesc[0][1] ||
                 pathname === navButtonsDesc[1][1] ||

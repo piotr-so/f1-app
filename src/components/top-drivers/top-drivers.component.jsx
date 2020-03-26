@@ -7,7 +7,7 @@ import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
 import { setTopDriversData } from '../../state/actions';
 
 import DriverCard from '../driver-card/driver-card.component';
-import { TopDriversWrapper, BackgroundBox, Title, DottedBox, CardsSlider, CardsSliderWrapper } from './top-drivers.styled';
+import { TopDriversWrapper, BackgroundBox, Title, DottedBox, Carousel, CarouselTrack } from './top-drivers.styled';
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
@@ -18,91 +18,126 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
     const [setRequestedData] = useGetData();
 
     const [scaledCardNum, setScaledCardNum] = useState(0);
-    const [sliderWrapperProps, setSliderWrapperProps] = useState({
-        isDraggable: false,
-        startX: 0,
-        startY: 0,
-        lastTouch: 0
+    const [carouselProps, setCarouselProps] = useState({
+        moving: false,
+        startX: null,
+        translatedAmount: 0,
     });
-    const SliderPos = useRef();
+    const CarouselRef = useRef();
 
-    const getIntValOf = element => {
-        return parseInt(element.replace("translateX(", "").replace("px)", ""), 10);
-    };
+    const [preventClick, setPreventClick] = useState(false);
 
-    const handleTouchStart = (e) => {
+    const handleGestureDown = (e) => {
+        e.persist();
+        const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
+        let newTranslatedAmount;
 
-        const currentSliderOffset = getIntValOf(SliderPos.current.style.transform);
-        const lastTouchCoordX = e.touches[0].clientX;
-        const startY = e.touches[0].clientY;
+        if (transformMatrix !== 'none') {
+            newTranslatedAmount = parseInt(transformMatrix.split(',')[4].trim());
+        };
 
-        setSliderWrapperProps(prevState => ({
+        let newStartX;
+
+        // synthetic event touches detection
+        if (e.pageX === undefined) newStartX = e.touches[0].clientX;
+        else newStartX = e.pageX;
+
+        setCarouselProps(prevState => ({
             ...prevState,
-            startX: currentSliderOffset,
-            lastTouch: lastTouchCoordX,
-            startY: startY
+            startX: newStartX,
+            translatedAmount: newTranslatedAmount,
+            moving: true
         }))
     };
-
-    const handleTouchMove = (event) => {
-
-        if (Math.abs(event.touches[0].clientX - sliderWrapperProps.lastTouch) > 20) {
-            setSliderWrapperProps(prevState => ({
-                ...prevState,
-                isDraggable: true
-            }))
-        }
-        if (sliderWrapperProps.isDraggable) {
+    const handleGestureMove = (e) => {
+        const { moving } = carouselProps;
+        if (moving) {
+            setPreventClick(true);
             switchScaledCard();
 
-            const translateValue = event.touches[0].clientX - sliderWrapperProps.lastTouch;
+            const { startX, translatedAmount } = carouselProps;
 
-            const currentSliderOffset = getIntValOf(SliderPos.current.style.transform);
+            let currentPosition;
 
-            if (sliderWrapperProps.startX + translateValue !== currentSliderOffset) {
-                let newValue = (sliderWrapperProps.startX + translateValue);
+            if (e.pageX === undefined) currentPosition = e.touches[0].clientX;
+            else currentPosition = e.pageX;
 
-                if (newValue > 0) {
-                    newValue = 0;
-                }
-                else if (-window.innerWidth + newValue < -SliderPos.current.getBoundingClientRect().width) {
-                    newValue = -SliderPos.current.getBoundingClientRect().width + window.width
-                }
-                SliderPos.current.style.transform = `translateX(${newValue}px)`
-            }
-        }
+            const diff = currentPosition - startX;
+            const speed = 1.25;
+
+            CarouselRef.current.style.transform = `translateX(${(translatedAmount + diff * speed).toFixed(0)}px)`;
+        };
     };
 
-    const handleTouchEnd = () => {
-        setSliderWrapperProps(prevState => ({
-            ...prevState,
-            isDraggable: false
-        }))
+    const handleGestureUp = useCallback(
+        () => {
+            const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
+            const translateAmount = parseInt(transformMatrix.split(',')[4].trim());
+
+            let maxTranslateAmount;
+            // override window context for "smartphone simulation view"
+            if (window.innerWidth > 450) {
+                maxTranslateAmount = -(CarouselRef.current.offsetWidth - CarouselRef.current.parentElement.offsetWidth)
+            }
+            else maxTranslateAmount = -(CarouselRef.current.offsetWidth - window.innerWidth)
+
+            if (translateAmount > 0 || translateAmount < maxTranslateAmount) {
+                let newTranslatedAmount;
+                if (translateAmount > 0) newTranslatedAmount = 0;
+                else newTranslatedAmount = maxTranslateAmount;
+
+                setCarouselProps(prevState => ({
+                    ...prevState,
+                    translatedAmount: newTranslatedAmount,
+                    moving: false
+                }))
+                CarouselRef.current.style.transform = `translateX(${newTranslatedAmount}px)`;
+                CarouselRef.current.style.transition = `transform 0.5s ease-in`;
+                setTimeout(() => CarouselRef.current.style.removeProperty('transition'), 600);
+            }
+            else {
+                setCarouselProps(prevState => ({
+                    ...prevState,
+                    moving: false
+                }))
+            }
+            setPreventClick(false);
+        },
+        []
+    );
+
+    const handleDriverCardMouseUp = (driverId) => {
+        if (preventClick) {
+            setPreventClick(false);
+            return;
+        }
+        else {
+            document.body.style.overflow = 'hidden';
+            history.push(`${location.pathname}/drivers/${driverId}`);
+            setPreventClick(false);
+        }
+
     };
 
     const switchScaledCard = () => {
-        const currentSliderOffset = getIntValOf(SliderPos.current.style.transform);
+        const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
+        const currentCarouselTrackOffset = parseInt(transformMatrix.split(',')[4].trim());
 
-        if (currentSliderOffset > -50) {
+        if (currentCarouselTrackOffset > -50) {
             return setScaledCardNum(0);
         }
-        else if (currentSliderOffset <= -50 && currentSliderOffset > -290) {
+        else if (currentCarouselTrackOffset <= -50 && currentCarouselTrackOffset > -290) {
             return setScaledCardNum(1);
         }
-        else if (currentSliderOffset <= -290 && currentSliderOffset > -490) {
+        else if (currentCarouselTrackOffset <= -290 && currentCarouselTrackOffset > -490) {
             return setScaledCardNum(2);
         }
-        else if (currentSliderOffset <= -490 && currentSliderOffset > -730) {
+        else if (currentCarouselTrackOffset <= -490 && currentCarouselTrackOffset > -730) {
             return setScaledCardNum(3);
         }
-        else if (currentSliderOffset <= -730) {
+        else if (currentCarouselTrackOffset <= -730) {
             return setScaledCardNum(4);
         }
-    };
-
-    const handleDriverCardClick = (driverId) => {
-        document.body.style.overflow = 'hidden';
-        history.push(`${location.pathname}/drivers/${driverId}`);
     };
 
     const selectTopDriversData = useCallback(
@@ -141,23 +176,35 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         [drivers.length, selectTopDriversData, setRequestedData]
     );
 
+    useEffect(
+        () => {
+            window.addEventListener('mouseup', handleGestureUp);
+            return () => window.removeEventListener('mouseup', handleGestureUp);
+        },
+        [handleGestureUp]
+    );
+
     return (
         <TopDriversWrapper>
             <BackgroundBox reveal={elementVisibility && topDriversData.length > 0} ref={ref} id={id}>
                 <Title>Top 5 drivers</Title>
-                <CardsSlider>
-                    <CardsSliderWrapper
-                        onTouchStart={(e) => handleTouchStart(e)}
-                        onTouchMove={(e) => handleTouchMove(e)}
-                        onTouchEnd={handleTouchEnd}
-                        ref={SliderPos}
+                <Carousel>
+                    <CarouselTrack
+                        onTouchStart={(e) => handleGestureDown(e)}
+                        onTouchMove={(e) => handleGestureMove(e)}
+                        onTouchEnd={handleGestureUp}
+                        onMouseDown={(e) => handleGestureDown(e)}
+                        onMouseMove={(e) => handleGestureMove(e)}
+
+                        ref={CarouselRef}
                         style={{ 'transform': `translateX(${0}px)` }}
                     >
                         {topDriversData.length > 0 && topDriversData.map((item, idx) =>
                             <DriverCard
                                 key={`card-${idx}`}
                                 driverId={item.Driver.driverId}
-                                onClickFn={handleDriverCardClick}
+                                onMouseUpFn={handleDriverCardMouseUp}
+                                isCarouselMoving={carouselProps.moving}
                                 scaled={scaledCardNum !== idx}
                                 fixPosition={idx > 0 && true}
                                 position={item.position}
@@ -168,10 +215,10 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                                 img={item.Driver.imageUrl}
                             />
                         )}
-                    </CardsSliderWrapper>
-                </CardsSlider>
+                    </CarouselTrack>
+                </Carousel>
             </BackgroundBox>
-            <DottedBox reveal={elementVisibility && topDriversData.length > 0}/>
+            <DottedBox reveal={elementVisibility && topDriversData.length > 0} />
         </TopDriversWrapper>
     );
 });

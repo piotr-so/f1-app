@@ -29,7 +29,7 @@ export const DottedBox = styled.div`
     z-index: 1;
     ${revealWithTranslateYTransition}
 `;
-export const CardsSlider = styled.div`
+export const Carousel = styled.div`
     position: absolute;
     width: 100%;
     height: 314px;
@@ -38,11 +38,10 @@ export const CardsSlider = styled.div`
     -webkit-overflow-scrolling: touch;
 `;
 
-export const CardsSliderWrapper = styled.div`
+export const CarouselTrack = styled.div`
     position: absolute;
     display: flex;
     flex-direction: row;
-    transition: transform 0.5s ease-in;
 
     &>div:first-child{
         margin-left: 24px;

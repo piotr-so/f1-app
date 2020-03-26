@@ -21,6 +21,21 @@ export const ArrowContainer = styled.div`
     width: 40px;
     height: 40px;
     margin-left: 16px;
+
+    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
+    
+    &:active {
+        position: relative;
+        &::after {
+            position: absolute;
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: rgba(232, 232, 232, 1);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+    }
 `;
 
 export const ArrowBack = styled(ArrowSVG)`

@@ -4,6 +4,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 import { useStateValue } from '../../state/context';
+import { useGetData } from '../../modules/hooks';
 
 import { fetchDriverOverviewImgFromCollection } from '../../firebase/firebase.utils'
 
@@ -16,15 +17,17 @@ import {
     InfoElem, DriverLastResultWrapper, CheckeredFlag, LastResultInfo, TrackImg, Info,
     InfographicsLabel, DetailedInfo
 } from './driver-overview-modal.styled';
+import DriverPlaceholderImg from '../../assets/imgs/driver_placeholder.png';
 
-const DriverOverviewModal = () => {
+const DriverOverviewModal = ({ type }) => {
     let location = useLocation();
 
     const [isUnmounting, setIsUnmounting] = useState(false);
-    const [basicData, setBasicData] = useState();
-    const [detailedData, setDetailedData] = useState();
+    const [basicData, setBasicData] = useState(null);
+    const [detailedData, setDetailedData] = useState(null);
 
     const [{ drivers }] = useStateValue();
+    const [setRequestedData] = useGetData();
 
     const fetchDetailedData = useCallback(
         async () => {
@@ -83,25 +86,37 @@ const DriverOverviewModal = () => {
 
     useEffect(
         () => {
-            fetchBasicData();
-            fetchDetailedData();
+            if (drivers.length > 0 && basicData === null && detailedData === null) {
+                fetchBasicData();
+                fetchDetailedData();
+            }
+        },
+        [fetchDetailedData, fetchBasicData, drivers.length, basicData, detailedData]
+    );
+
+    useEffect(
+        () => {
+            if (drivers.length) {
+                setRequestedData('drivers-data');
+            }
             return () => document.body.style.overflow = '';
         },
-        [fetchDetailedData, fetchBasicData]
+        [drivers.length, setRequestedData]
     );
 
     return (
-        <StyledDriverOverviewModal>
+        <StyledDriverOverviewModal type={type}>
             <ModalWrapper
+                type={type}
                 isUnmounting={isUnmounting}
             >
                 <Header
                     type={'driver-overview'}
                     unmountFn={setIsUnmounting}
                 />
-                <ContentWrapper>
+                <ContentWrapper type={type}>
                     <DriverBackground
-                        url={basicData && basicData.driverImgUrl}
+                        url={basicData && (basicData.driverImgUrl ? basicData.driverImgUrl : DriverPlaceholderImg)}
                         reveal={basicData ? true : false}
                     >
                         <DriverPosition

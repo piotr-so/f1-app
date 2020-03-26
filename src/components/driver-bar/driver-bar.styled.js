@@ -22,7 +22,13 @@ export const DriverBarWrapper = styled.div`
     border-radius: 10px;
     box-sizing: border-box;
     
-    ${revealAnimation};
+    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
+
+    ${revealAnimation}
+
+    &:active {
+        background: rgba(232, 232, 232, 1);
+    }
 
     &::before {
         content: "${props => props.number}";
@@ -46,5 +52,5 @@ export const DriverBarWrapper = styled.div`
 export const FullName = styled.span`
     font-size: 20px;
     color: ${FontColors.driverCard};
-    margin-left: 32px;
+    margin: 0 10px 0 32px;
 `;

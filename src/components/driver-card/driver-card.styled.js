@@ -21,6 +21,14 @@ export const CardWrapper = styled.div`
         transform: scale(0.9) translateY(18px);
     `};
     transition: transform .5s;
+
+    user-select: none;
+
+    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
+    
+    &:active {
+        background: rgba(232, 232, 232, 1);
+    }
 `;
 export const DriverInfo = styled.div`
     display: flex;
