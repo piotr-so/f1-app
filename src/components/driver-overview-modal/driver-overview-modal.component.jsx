@@ -32,7 +32,7 @@ const DriverOverviewModal = ({ type }) => {
     const fetchDetailedData = useCallback(
         async () => {
             const driverId = `${location.pathname.split('/')[3]}`;
-            let lastRaceResultResponse = await axios.get(`http://ergast.com/api/f1/2019/last/drivers/${driverId}/results.json`);
+            let lastRaceResultResponse = await axios.get(`https://ergast.com/api/f1/2019/last/drivers/${driverId}/results.json`);
             let seasonPolesNumResponse = await axios.get(`https://ergast.com/api/f1/2019/drivers/${driverId}/grid/1/qualifying.json`);
 
             const lastRaceEventInfo = lastRaceResultResponse.data.MRData.RaceTable.Races[0];
