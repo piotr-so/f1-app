@@ -28,6 +28,7 @@ const DriverStandings = () => {
     const { visibleElemsArr, visible } = visibleElement;
 
     const handleClick = (driverId) => {
+        document.body.style.overflow = 'hidden';
         history.push(`${location.pathname}/drivers/${driverId}`);
     };
 
