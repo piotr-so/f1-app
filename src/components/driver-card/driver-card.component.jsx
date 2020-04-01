@@ -5,12 +5,14 @@ import DriverPoints from '../driver-points/driver-points.component';
 import { CardWrapper, DriverInfo, DriverNumber, DriverDescription, Name, Team, DriverImg } from './driver-card.styled';
 import driverPlaceholderImg from '../../assets/imgs/driver_placeholder.png';
 
-const DriverCard = ({ scaled, position, name, points, constructorTeam, img, teamBackgroundTheme, fixPosition, driverId, onMouseUpFn }) => {
+const DriverCard = ({ scaled, position, name, points, constructorTeam, img, teamBackgroundTheme, fixPosition, driverId, onMouseUpFn, isGrabbed }) => {
     return (
         <CardWrapper
             scaled={scaled}
             theme={teamBackgroundTheme}
             onMouseUp={() => onMouseUpFn(driverId)}
+            draggable={false}
+            showGrabIcon={isGrabbed}
         >
             <DriverInfo>
                 <DriverNumber fixPosition={fixPosition}>{position}</DriverNumber>

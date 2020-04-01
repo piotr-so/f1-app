@@ -75,7 +75,6 @@ export const Info = styled.div`
 
 export const SmartphoneViewInfoBox = styled.div`
     width: 455px;
-    height: 331px;
     font-weight: bold;
     margin: 0 50px;
 

@@ -5,7 +5,7 @@ import { useStateValue } from '../../state/context';
 import { setTopConstructorsVisible, saveWindowPos } from '../../state/actions';
 
 import NextRace from '../../components/next-race-info/next-race-info.component';
-import TopDrivers from '../../components/top-drivers/top-drivers.component';
+import TopDriversContainer from '../../components/top-drivers/top-drivers.container';
 import TopConstructors from '../../components/top-constructors/top-constructors.component';
 
 import './Home.styled';
@@ -59,7 +59,7 @@ const Home = () => {
         id={'nextRace'}
         elementVisibility={true}
       />
-      <TopDrivers
+      <TopDriversContainer
         id={'topDrivers'}
         elementVisibility={true}
       />

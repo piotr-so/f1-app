@@ -4,31 +4,41 @@ import { FontColors, BackgroundColors } from '../../modules/constants';
 const { constructorTheme } = BackgroundColors;
 
 export const CardWrapper = styled.div`
+    box-sizing: border-box;
+
+    position: relative;
     display: flex;
     flex-direction: column;
-    width: 224px;
+    min-width: 228px;
     height: 312px;
     color: ${FontColors.driverCard};
     background: ${props => {
         const themeColors = constructorTheme[props.theme];
         return `linear-gradient(25deg, ${themeColors[0]} 0%, ${themeColors[1]} 45%, ${themeColors[2]} 65%)`
     }};
+    background-color: white;
     box-shadow: 3px 3px 6px #00000029;
     border: 1px solid #9D9797;
     border-radius: 10px;
-    margin-right: 20px;
+    transition: transform .5s;
+    
+    user-select: none;
+    cursor: ${window.innerWidth > 450 ? (props => props.showGrabIcon ? 'grabbing' : 'pointer') : undefined};
+
     ${props => props.scaled && css`
         transform: scale(0.9) translateY(18px);
     `};
-    transition: transform .5s;
 
-    user-select: none;
+    ${!(window.innerWidth > 450) && css`
+        &:active {
+            background: rgba(232, 232, 232, 1);
+        }
+    `}
 
-    cursor: ${window.innerWidth > 450 ? 'pointer' : undefined};
-    
-    &:active {
-        background: rgba(232, 232, 232, 1);
-    }
+    /* mobile version properties for css scroll */
+    scroll-snap-align: start;
+    scroll-margin-left: 20px;
+    scroll-snap-stop: always;
 `;
 export const DriverInfo = styled.div`
     display: flex;
@@ -54,5 +64,5 @@ export const Team = styled.div`
 `;
 
 export const DriverImg = styled.img`
-    margin: 0 auto;
+    margin: -2px auto 0 auto;
 `;

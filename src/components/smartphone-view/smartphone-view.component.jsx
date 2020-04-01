@@ -46,7 +46,7 @@ const SmartphoneView = ({ children }) => {
                         <p>
                             This web-view is a simulation of how app behaves on mobile device.<br />
                             <br />
-                            Contexts of elements are different in this environment for the purpose of proper interactions.<br />
+                            Contexts of elements and some components logic are different in this environment for the purpose of proper interactions.<br />
                             <br />
 
                             <u>Viewing this app on mobile device is highly recommended.<br /></u>
@@ -62,6 +62,8 @@ const SmartphoneView = ({ children }) => {
                 <SmartphoneViewInfoBox reveal={!isModalVisible}>
                     <span>F1 Application</span>
                     <p>
+                        You are now in simulation mode.<br />
+                        <br />
                         Viewing this app on mobile device is highly recommended.<br />
                         <br />
                         For native-like experience,<br />

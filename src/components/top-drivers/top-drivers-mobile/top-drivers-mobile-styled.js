@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
-import { FontColors, BackgroundColors } from '../../modules/constants';
-import { revealWithTranslateYTransition } from '../../modules/animations.styled';
+import { FontColors, BackgroundColors } from '../../../modules/constants';
+import { revealWithTranslateYTransition } from '../../../modules/animations.styled';
 
 export const TopDriversWrapper = styled.section`
     display: flex;
@@ -8,6 +8,7 @@ export const TopDriversWrapper = styled.section`
     width: 100%;
 `;
 export const BackgroundBox = styled.div`
+    position: relative;
     width: 100%;
     height: 360px;
     background-color: ${BackgroundColors.main};
@@ -26,24 +27,33 @@ export const DottedBox = styled.div`
     height: 72px;
     background: radial-gradient(${BackgroundColors.main} 20%, rgba(0,0,0,0) 25%);
     background-size: 15px 15px;
+    margin-top: -3px;
     z-index: 1;
     ${revealWithTranslateYTransition}
 `;
 export const Carousel = styled.div`
-    position: absolute;
+    position: relative;
     width: 100%;
-    height: 314px;
+    height: 320px;
     margin-top: 24px;
     overflow: hidden;
-    -webkit-overflow-scrolling: touch;
+    
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 0 0 15px;
+    &::-webkit-scrollbar {
+            display: none;
+    }
 `;
 
 export const CarouselTrack = styled.div`
     position: absolute;
-    display: flex;
-    flex-direction: row;
+    box-sizing: border-box;
+    height: 320px;
 
-    &>div:first-child{
-        margin-left: 24px;
-    }
+    display: grid;
+    grid-template-columns: repeat(5, 230px);
+    grid-gap: 20px;
+    padding: 0 250px 0 250px; 
 `;

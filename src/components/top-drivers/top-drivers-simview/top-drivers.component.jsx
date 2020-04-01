@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, forwardRef, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { useStateValue } from '../../state/context';
-import { useGetData } from '../../modules/hooks';
-import { fetchDriverImgsFromCollection } from '../../firebase/firebase.utils';
-import { setTopDriversData } from '../../state/actions';
+import { useStateValue } from '../../../state/context';
+import { useGetData } from '../../../modules/hooks';
+import { fetchDriverImgsFromCollection } from '../../../firebase/firebase.utils';
+import { setTopDriversData } from '../../../state/actions';
 
-import DriverCard from '../driver-card/driver-card.component';
+import DriverCard from '../../driver-card/driver-card.component';
 import { TopDriversWrapper, BackgroundBox, Title, DottedBox, Carousel, CarouselTrack } from './top-drivers.styled';
 
 const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
@@ -23,24 +23,22 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         startX: null,
         translatedAmount: 0,
     });
-    const CarouselRef = useRef();
+    const CarouselTrackRef = useRef();
 
     const [preventClick, setPreventClick] = useState(false);
 
-    const handleGestureDown = (e) => {
+    
+    const handleMouseDown = (e) => {
         e.persist();
-        const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
+        if (CarouselTrackRef.current.style.transition) CarouselTrackRef.current.style.removeProperty('transition');
+        const transformMatrix = window.getComputedStyle(CarouselTrackRef.current).getPropertyValue('transform');
         let newTranslatedAmount;
 
         if (transformMatrix !== 'none') {
             newTranslatedAmount = parseInt(transformMatrix.split(',')[4].trim());
         };
 
-        let newStartX;
-
-        // synthetic event touches detection
-        if (e.pageX === undefined) newStartX = e.touches[0].clientX;
-        else newStartX = e.pageX;
+        const newStartX = e.pageX;
 
         setCarouselProps(prevState => ({
             ...prevState,
@@ -49,7 +47,8 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
             moving: true
         }))
     };
-    const handleGestureMove = (e) => {
+
+    const handleMouseMove = (e) => {
         const { moving } = carouselProps;
         if (moving) {
             setPreventClick(true);
@@ -57,53 +56,41 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
             const { startX, translatedAmount } = carouselProps;
 
-            let currentPosition;
-
-            if (e.pageX === undefined) currentPosition = e.touches[0].clientX;
-            else currentPosition = e.pageX;
+            const currentPosition = e.pageX;
 
             const diff = currentPosition - startX;
             const speed = 1.25;
 
-            CarouselRef.current.style.transform = `translateX(${(translatedAmount + diff * speed).toFixed(0)}px)`;
+            CarouselTrackRef.current.style.transform = `translateX(${(translatedAmount + diff * speed).toFixed(0)}px)`;
         };
     };
 
-    const handleGestureUp = useCallback(
+    const handleMouseUp = useCallback(
         () => {
-            const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
-            const translateAmount = parseInt(transformMatrix.split(',')[4].trim());
-
-            let maxTranslateAmount;
-            // override window context for "smartphone simulation view"
-            if (window.innerWidth > 450) {
-                maxTranslateAmount = -(CarouselRef.current.offsetWidth - CarouselRef.current.parentElement.offsetWidth)
-            }
-            else maxTranslateAmount = -(CarouselRef.current.offsetWidth - window.innerWidth)
-
-            if (translateAmount > 0 || translateAmount < maxTranslateAmount) {
-                let newTranslatedAmount;
-                if (translateAmount > 0) newTranslatedAmount = 0;
-                else newTranslatedAmount = maxTranslateAmount;
-
-                setCarouselProps(prevState => ({
-                    ...prevState,
-                    translatedAmount: newTranslatedAmount,
-                    moving: false
-                }))
-                CarouselRef.current.style.transform = `translateX(${newTranslatedAmount}px)`;
-                CarouselRef.current.style.transition = `transform 0.5s ease-in`;
-                setTimeout(() => CarouselRef.current.style.removeProperty('transition'), 600);
-            }
-            else {
-                setCarouselProps(prevState => ({
-                    ...prevState,
-                    moving: false
-                }))
-            }
+            setCarouselProps(prevState => ({
+                ...prevState,
+                moving: false
+            }));
             setPreventClick(false);
+
+            const leftPadding = 24
+            const cardWidth = 230;
+            const gap = 20;
+            const breakpoint = cardWidth + gap;
+
+            const snapToCardPos = scaledCardNum === 0 ? leftPadding : scaledCardNum * -breakpoint + leftPadding;
+
+
+            CarouselTrackRef.current.style.transform = `translateX(${snapToCardPos}px)`;
+            CarouselTrackRef.current.style.transition = 'transform .5s ease-in';
+            setTimeout(
+                () => {
+                    if (CarouselTrackRef.current) CarouselTrackRef.current.style.removeProperty('transition');
+                },
+                600
+            );
         },
-        []
+        [scaledCardNum]
     );
 
     const handleDriverCardMouseUp = (driverId) => {
@@ -120,22 +107,28 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
     };
 
     const switchScaledCard = () => {
-        const transformMatrix = window.getComputedStyle(CarouselRef.current).getPropertyValue('transform');
+        const transformMatrix = window.getComputedStyle(CarouselTrackRef.current).getPropertyValue('transform');
         const currentCarouselTrackOffset = parseInt(transformMatrix.split(',')[4].trim());
 
-        if (currentCarouselTrackOffset > -50) {
+        const cardWidth = 230;
+        const gap = 20;
+        // negative values for sim view translation
+        const cardMiddle = -115;
+        const breakpoint = -(cardWidth + gap);
+
+        if (currentCarouselTrackOffset > cardMiddle) {
             return setScaledCardNum(0);
         }
-        else if (currentCarouselTrackOffset <= -50 && currentCarouselTrackOffset > -290) {
+        else if (currentCarouselTrackOffset <= cardMiddle && currentCarouselTrackOffset > breakpoint + cardMiddle) {
             return setScaledCardNum(1);
         }
-        else if (currentCarouselTrackOffset <= -290 && currentCarouselTrackOffset > -490) {
+        else if (currentCarouselTrackOffset <= breakpoint + cardMiddle && currentCarouselTrackOffset > breakpoint * 2 + cardMiddle) {
             return setScaledCardNum(2);
         }
-        else if (currentCarouselTrackOffset <= -490 && currentCarouselTrackOffset > -730) {
+        else if (currentCarouselTrackOffset <= breakpoint * 2 + cardMiddle && currentCarouselTrackOffset > breakpoint * 3 + cardMiddle) {
             return setScaledCardNum(3);
         }
-        else if (currentCarouselTrackOffset <= -730) {
+        else if (currentCarouselTrackOffset <= breakpoint * 3 + cardMiddle) {
             return setScaledCardNum(4);
         }
     };
@@ -178,10 +171,10 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
 
     useEffect(
         () => {
-            window.addEventListener('mouseup', handleGestureUp);
-            return () => window.removeEventListener('mouseup', handleGestureUp);
+            window.addEventListener('mouseup', handleMouseUp);
+            return () => window.removeEventListener('mouseup', handleMouseUp);
         },
-        [handleGestureUp]
+        [handleMouseUp]
     );
 
     return (
@@ -190,21 +183,19 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                 <Title>Top 5 drivers</Title>
                 <Carousel>
                     <CarouselTrack
-                        onTouchStart={(e) => handleGestureDown(e)}
-                        onTouchMove={(e) => handleGestureMove(e)}
-                        onTouchEnd={handleGestureUp}
-                        onMouseDown={(e) => handleGestureDown(e)}
-                        onMouseMove={(e) => handleGestureMove(e)}
+                        onMouseDown={(e) => handleMouseDown(e)}
+                        onMouseMove={(e) => handleMouseMove(e)}
 
-                        ref={CarouselRef}
-                        style={{ 'transform': `translateX(${0}px)` }}
+                        ref={CarouselTrackRef}
+                        style={{ 'transform': `translateX(${24}px)` }}
+                        isGrabbed={carouselProps.moving}
                     >
                         {topDriversData.length > 0 && topDriversData.map((item, idx) =>
                             <DriverCard
                                 key={`card-${idx}`}
                                 driverId={item.Driver.driverId}
                                 onMouseUpFn={handleDriverCardMouseUp}
-                                isCarouselMoving={carouselProps.moving}
+                                isGrabbed={carouselProps.moving}
                                 scaled={scaledCardNum !== idx}
                                 fixPosition={idx > 0 && true}
                                 position={item.position}
