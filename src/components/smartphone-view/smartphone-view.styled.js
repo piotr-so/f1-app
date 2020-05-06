@@ -91,6 +91,9 @@ export const SmartphoneViewWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    /* scale for 13' monitor */
+    height: ${window.innerHeight < 709 ? `${window.innerHeight}px` : '100vh'};
+    transform: ${window.innerHeight < 709 ? 'scale(0.8)' : undefined};
 `;
 
 export const SmartphoneWrapper = styled.div`

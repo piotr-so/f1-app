@@ -71,7 +71,6 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         const gap = 20;
         const cardMiddle = 115;
         const breakpoint = cardWidth + gap;
-        console.log('firing carousel scroll')
 
         if (carouselOffset <= breakpoint + cardMiddle) {
             return setScaledCardNum(0);

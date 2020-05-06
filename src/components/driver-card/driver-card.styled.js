@@ -4,6 +4,16 @@ import { FontColors, BackgroundColors } from '../../modules/constants';
 const { constructorTheme } = BackgroundColors;
 
 export const CardWrapper = styled.div`
+    width: 230px;
+    height: 320px;
+
+    /* mobile version properties for css scroll */
+    scroll-snap-align: start;
+    scroll-margin-left: 20px;
+    scroll-snap-stop: always;
+`;
+
+export const CardContent = styled.div`
     box-sizing: border-box;
 
     position: relative;
@@ -34,11 +44,6 @@ export const CardWrapper = styled.div`
             background: rgba(232, 232, 232, 1);
         }
     `}
-
-    /* mobile version properties for css scroll */
-    scroll-snap-align: start;
-    scroll-margin-left: 20px;
-    scroll-snap-stop: always;
 `;
 export const DriverInfo = styled.div`
     display: flex;

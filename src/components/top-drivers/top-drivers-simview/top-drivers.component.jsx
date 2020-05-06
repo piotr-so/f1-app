@@ -17,21 +17,30 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
     const [{ drivers, topDriversData }, dispatch] = useStateValue();
     const [setRequestedData] = useGetData();
 
-    const [scaledCardNum, setScaledCardNum] = useState(0);
     const [carouselProps, setCarouselProps] = useState({
         moving: false,
         startX: null,
         translatedAmount: 0,
     });
     const CarouselTrackRef = useRef();
+    let scaledCardNumRef = useRef(0);
 
     const [preventClick, setPreventClick] = useState(false);
 
     
     const handleMouseDown = (e) => {
         e.persist();
-        if (CarouselTrackRef.current.style.transition) CarouselTrackRef.current.style.removeProperty('transition');
+
         const transformMatrix = window.getComputedStyle(CarouselTrackRef.current).getPropertyValue('transform');
+
+        // stopping currently running transition effect when grabbing
+        if (CarouselTrackRef.current.style.transition) {
+            const translatePosToStopWhenGrabbed = parseInt(transformMatrix.split(',')[4].trim());
+
+            CarouselTrackRef.current.style.transform = `translateX(${translatePosToStopWhenGrabbed}px)`;
+            CarouselTrackRef.current.style.removeProperty('transition');
+        }
+
         let newTranslatedAmount;
 
         if (transformMatrix !== 'none') {
@@ -78,7 +87,8 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
             const gap = 20;
             const breakpoint = cardWidth + gap;
 
-            const snapToCardPos = scaledCardNum === 0 ? leftPadding : scaledCardNum * -breakpoint + leftPadding;
+
+            const snapToCardPos = scaledCardNumRef.current === 0 ? leftPadding : scaledCardNumRef.current * -breakpoint + leftPadding;
 
 
             CarouselTrackRef.current.style.transform = `translateX(${snapToCardPos}px)`;
@@ -90,7 +100,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                 600
             );
         },
-        [scaledCardNum]
+        []
     );
 
     const handleDriverCardMouseUp = (driverId) => {
@@ -117,19 +127,19 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
         const breakpoint = -(cardWidth + gap);
 
         if (currentCarouselTrackOffset > cardMiddle) {
-            return setScaledCardNum(0);
+            return scaledCardNumRef.current = 0;
         }
         else if (currentCarouselTrackOffset <= cardMiddle && currentCarouselTrackOffset > breakpoint + cardMiddle) {
-            return setScaledCardNum(1);
+            return scaledCardNumRef.current = 1;
         }
         else if (currentCarouselTrackOffset <= breakpoint + cardMiddle && currentCarouselTrackOffset > breakpoint * 2 + cardMiddle) {
-            return setScaledCardNum(2);
+            return scaledCardNumRef.current = 2;
         }
         else if (currentCarouselTrackOffset <= breakpoint * 2 + cardMiddle && currentCarouselTrackOffset > breakpoint * 3 + cardMiddle) {
-            return setScaledCardNum(3);
+            return scaledCardNumRef.current = 3;
         }
         else if (currentCarouselTrackOffset <= breakpoint * 3 + cardMiddle) {
-            return setScaledCardNum(4);
+            return scaledCardNumRef.current = 4;
         }
     };
 
@@ -196,7 +206,7 @@ const TopDrivers = forwardRef(({ elementVisibility, id }, ref) => {
                                 driverId={item.Driver.driverId}
                                 onMouseUpFn={handleDriverCardMouseUp}
                                 isGrabbed={carouselProps.moving}
-                                scaled={scaledCardNum !== idx}
+                                scaled={scaledCardNumRef.current !== idx}
                                 fixPosition={idx > 0 && true}
                                 position={item.position}
                                 name={item.Driver.familyName}
